@@ -1,0 +1,40 @@
+
+setwd("XXX")
+library(pamr)
+
+# import data with sam format combined_exprM_sam_batch.txt
+data <- pamr.from.excel("Data_with_sam_format.txt", 410, sample.labels=TRUE, batch.labels=TRUE) 
+
+# batch adjust
+combined.data2 <- pamr.batchadjust(combined.data)
+
+# output the adjusted
+pamr.to.excel(combined.data2, file="combined_exprM_sam_batchadjusted.txt")
+
+##########################
+transfer data to same std. dev. ad the TCGA batch
+https://stats.stackexchange.com/questions/46429/transform-data-to-desired-mean-and-standard-deviation
+##########################
+# import data with sam format
+tcga_adjusted <- pamr.from.excel("TCGA_batchadjusted.txt", 410, sample.labels=TRUE, batch.labels=TRUE)
+
+# training
+tcga.train <- pamr.train(tcga_adjusted)
+tcga.train
+
+# cross validation
+tcga.results<- pamr.cv(tcga.train, tcga_adjusted)
+
+# plot
+pdf("tcga_pamr.pdf")
+pamr.plotcv(tcga.results)
+dev.off()
+
+# predict using the model
+gsedata_adjusted <- pamr.from.excel("GSE87304_batchadjust.txt",  307, sample.labels=TRUE, batch.labels=TRUE)
+pamr_predict <- pamr.predict(tcga.train, gsedata_adjusted$x, threshold=4.5)
+table(pamr_predict)
+write.csv(pamr_predict4, file="GSE87304_predicted_4.csv",rownames=TRUE)
+pred4_2 <- paste(t(gsedata_adjusted$samplelabels), "\t", t(as.character(pamr_predict4)))
+write.csv(pred4_2, file="GSE87304_predicted_4_paste.csv",row.names=TRUE)
+
