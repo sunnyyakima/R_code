@@ -1,0 +1,27 @@
+# log transformation
+setwd("/Users/yuliu/Bladder/publicData")
+data <- read.csv("non_normalized_data.csv",header=T, row.names=1)
+data[data<=0] = 0
+data_log <- log(data + 1, 2)
+boxplot(data_log)
+write.csv(data_log, file="log_transformed.csv")
+
+# normalization
+library(preprocessCore)
+setwd("/Users/yuliu/Bladder/publicData")
+data <- read.csv("non_normalized_data.csv",header=T)
+head(data)
+rownames(data) <- data[,1]
+data_mat <- data.matrix(data[,-1]) 
+head(data_mat)
+data_norm <- normalize.quantiles(data_mat, copy = TRUE)
+pdf("after_norm.pdf")
+boxplot(data_norm)
+dev.off()
+write.csv(data_norm, file="quantile_norm.csv")
+
+# select the probe with max expression as gene expression
+mydat <- read.table("quantile_norm3_gene_symbol2.csv", header = T, sep = ",")
+mydat.max <- aggregate(. ~ symbols, data = mydat, max)
+head(mydat.max)
+write.csv(mydat.max, file="quantile_norm3_gene_symbol3.csv", row.names=FALSE)
