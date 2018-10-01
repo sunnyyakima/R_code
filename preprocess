@@ -20,6 +20,12 @@ boxplot(data_norm)
 dev.off()
 write.csv(data_norm, file="quantile_norm.csv")
 
+# convert to gene symbol
+library("illuminaHumanv4.db")
+data <- read.csv("quantile_norm2.csv", header=T, row.names=1)
+symbols <- mapIds(illuminaHumanv4.db, rownames(data), "SYMBOL","PROBEID")
+write.csv(as.data.frame(symbols), file="geneSymbolMap.csv")
+
 # select the probe with max expression as gene expression
 mydat <- read.table("quantile_norm3_gene_symbol2.csv", header = T, sep = ",")
 mydat.max <- aggregate(. ~ symbols, data = mydat, max)
