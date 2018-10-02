@@ -1,0 +1,6 @@
+
+tcga <- read.csv("TCGA_BLCA_exprM.csv", header=T, row.names=1)
+gse48276 <- read.csv("GSE48276_gene_symbol3.csv", header=T, row.names=1)
+gg <- intersect(rownames(tcga), rownames(gse48276))
+write.csv(tcga[gg,], file=""TCGA_commongene.csv", row.names=TRUE)
+write.csv(gse48276[gg,], file="GSE48276_commongene.csv", row.names=TRUE)
