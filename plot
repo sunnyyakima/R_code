@@ -1,7 +1,11 @@
-> library(ggfortify)
-Loading required package: ggplot2
-> 
-> mydata_df <- as.data.frame(mydata_log)
-> autoplot(prcomp(mydata_df))
-> autoplot(prcomp(t(mydata_df)))
-> 
+# PCA plot
+library(ggfortify)
+mydata_df <- as.data.frame(mydata_log)
+autoplot(prcomp(t(mydata_df)))
+ 
+# scatter plot
+library(ggplot2)
+ggplot(bcl2l_df, aes(x=x, y=bcl2_score) ) + geom_point(size=2, shape=23)
+bcl2l_df$Cancer_type <- as.factor(bcl2l_df$Cancer_type)
+ggplot(bcl2l_df, aes(x=x, y=bcl2_score, color=Cancer_type) ) + geom_point(size=2, shape=23)
+ 
