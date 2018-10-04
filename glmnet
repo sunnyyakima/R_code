@@ -19,3 +19,7 @@ cvfit$lambda.min
 summ_coef = summary(coef(cvfit, s=cvfit$lambda.min))
 #summ_coef = summary(coef(fit, s=0.011))
 outreport = data.frame(gene= colnames(x)[summ_coef$i], weight=summ_coef$x)
+
+nx <- as.matrix(read.csv("/Users/yuliu/Reverse_Targeting/BCL2L1/glmnet_predict/glmnet_predict.csv", header=T, row.names=1))
+out_pred <- predict(fit,newx=nx,s=0.011)
+write.csv(as.data.frame(out_pred), file="glmnet_predict_tim.csv", row.names=T)
