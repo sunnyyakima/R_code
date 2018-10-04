@@ -1,0 +1,21 @@
+
+library(glmnet)
+setwd("/Users/yuliu/Reverse_Targeting/BCL2L1/glmnet")
+x0 <- read.csv("glmnet_exprM.csv", header=T, row.names=1)
+x = t(x0)
+y <- read.csv("glmnet_crispr.csv", header=T, row.names=1)
+x = as.matrix(x)
+y = as.matrix(y)
+fit <- glmnet(x,y)
+
+plot(fit)
+print(fit)
+
+cvfit = cv.glmnet(x, y)
+plot(cvfit)
+
+summ_coef = coef(fit, s=0.011)
+cvfit$lambda.min
+summ_coef = summary(coef(cvfit, s=cvfit$lambda.min))
+#summ_coef = summary(coef(fit, s=0.011))
+outreport = data.frame(gene= colnames(x)[summ_coef$i], weight=summ_coef$x)
