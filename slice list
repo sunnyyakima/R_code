@@ -1,0 +1,1 @@
+tail(mylist, -2), has the same effect as mylist[2:] in Python
