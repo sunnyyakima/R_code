@@ -1,3 +1,13 @@
+# adding cancer type
+setwd("/Users/yuliu/Reverse_Targeting/BCL2L1/glmnet")
+x0 <- read.csv("test_model_matrix.csv", header=T, row.names=1)
+x1 <- t(x0)
+x2 <- as.data.frame(x1)
+x2$Cancer_type = as.factor(x2$Cancer_type)
+tumorType <- model.matrix( ~ Cancer_type, x2)
+tumorType
+write.csv(tumorType,file="tumor_type_as_factor.csv")
+
 
 library(glmnet)
 setwd("/Users/yuliu/Reverse_Targeting/BCL2L1/glmnet")
