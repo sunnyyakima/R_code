@@ -1,3 +1,8 @@
+#SAM format:
+#SampleID: sample1,sample2,sample3,sample4
+#batchlabel: batch1,batch1,batch2,batch2
+#samplelabel(classID): class1,class2,class1,class2
+
 
 setwd("XXX")
 library(pamr)
