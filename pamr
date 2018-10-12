@@ -2,7 +2,7 @@
 #SampleID: sample1,sample2,sample3,sample4
 #batchlabel: batch1,batch1,batch2,batch2
 #samplelabel(classID): class1,class2,class1,class2
-
+#second column is used as a description column
 
 setwd("XXX")
 library(pamr)
