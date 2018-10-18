@@ -35,3 +35,19 @@ write.csv(mydat.max, file="quantile_norm3_gene_symbol3.csv", row.names=FALSE)
 # intersect of two tables
 gg<-intersect(rownames(BLCA),rownames(exprM))
 head(BLCA[gg,])
+
+
+
+setwd("/Users/yuliu/Bladder_ML/resource")
+gse48276 <- read.csv("GSE48276_exprM_init.csv", header=T, row.names=1)
+gse48276[gse48276<=0] = 0
+gse48276_log <- log(gse48276 + 1, 2)
+boxplot(gse48276_log)
+library(preprocessCore)
+gse48276_mat <- as.matrix(gse48276_log)
+gse48276_norm <- normalize.quantiles(gse48276_mat, copy = TRUE)
+boxplot(gse48276_norm)
+row.names(gse48276_norm) <- row.names(gse48276)
+colnames(gse48276_norm) <- colnames(gse48276)
+write.csv(gse48276_norm, file="GSE48276_norm.csv", row.names=T)
+ 
