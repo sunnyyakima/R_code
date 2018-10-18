@@ -31,3 +31,7 @@ mydat <- read.table("quantile_norm3_gene_symbol2.csv", header = T, sep = ",")
 mydat.max <- aggregate(. ~ symbols, data = mydat, max)
 head(mydat.max)
 write.csv(mydat.max, file="quantile_norm3_gene_symbol3.csv", row.names=FALSE)
+
+# intersect of two tables
+gg<-intersect(rownames(BLCA),rownames(exprM))
+
