@@ -18,6 +18,10 @@ x = as.matrix(x)
 y = as.matrix(y)
 fit <- glmnet(x,y)
 
+# binary outcome
+glmmod <- glmnet(x, y=as.factor(asthma), alpha=1, family="binomial")
+
+
 plot(fit)
 print(fit)
 
