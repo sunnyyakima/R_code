@@ -16,3 +16,42 @@ ggscatter(mydata, x="tim_result", y="predict", add = "reg.line", cor.coef = TRUE
 pdf("cmp_glmnet_tim.pdf")
 ggscatter(mydata, x="tim_result", y="predict", add = "reg.line", cor.coef = TRUE, cor.method = "pearson", xlab = "tim_crispr_results", ylab= "glmnet predict")
 dev.off()
+
+# heatmap
+setwd("/Users/yuliu/Bladder/publicData/heatmap3")
+library("gplots")
+library("devtools")
+source_url("https://raw.githubusercontent.com/obigriffith/biostar-tutorials/master/Heatmaps/heatmap.3.R")
+ 
+data_in <- read.csv("public_EMT_data3.csv", header=T, row.names=1)
+data_matrix <- data.matrix(data_in)
+ 
+x <- scale(t(as.matrix(data_matrix)))
+x <- t(x)
+ 
+mydist=function(c) {dist(c,method="euclidian")}
+myclust=function(c) {hclust(c,method="average")}
+ 
+grp = c("red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue")
+grp = c("cyan","cyan","cyan","cyan","cyan","cyan","cyan","cyan","cyan","cyan","cyan","cyan","cyan","cyan","cyan","cyan","cyan","cyan","cyan","cyan","magenta","magenta","magenta","magenta","magenta","magenta","magenta","magenta","magenta","magenta","magenta","magenta","magenta","magenta","magenta","magenta","magenta","magenta","magenta","magenta")
+subclass=c("yellow","yellow","yellow","red","red","yellow","yellow","red","blue","blue","red","yellow","blue","red","yellow","red","yellow","red","red","blue","yellow","yellow","yellow","red","red","yellow","yellow","red","blue","blue","red","yellow","blue","red","yellow","red","yellow","red","red","blue")
+subclass=c("grey","grey","grey","darkblue","darkblue","grey","grey","darkblue","green","green","darkblue","grey","green","darkblue","grey","darkblue","grey","darkblue","darkblue","green","grey","grey","grey","darkblue","darkblue","grey","grey","darkblue","green","green","darkblue","grey","green","darkblue","grey","darkblue","grey","darkblue","darkblue","green") 
+
+clab = cbind(grp, subclass)
+colnames(clab)=c("condition","subclass")
+
+heatmap.3(x, hclustfun=myclust, distfun=mydist, na.rm = TRUE, scale="none", dendrogram="both", margins=c(6,12), Rowv=TRUE, Colv=TRUE, ColSideColors=clab, symbreaks=FALSE, key=TRUE, symkey=FALSE, density.info="none", trace="none", labCol=FALSE, col=rev(heat.colors(75)), ColSideColorsSize=2)
+
+library("devtools")
+source_url("https://raw.githubusercontent.com/obigriffith/biostar-tutorials/master/Heatmaps/heatmap.3.R")
+>  
+data_in <- read.csv("public_whole_set_log2_FC.csv", header=T, row.names=1)
+data_matrix <- data.matrix(data_in)
+column_annotation <- c("grey","grey","grey","darkblue","darkblue","grey","grey","darkblue","green","green","darkblue","grey","green","darkblue","grey","darkblue","grey","darkblue","darkblue","green")
+column_annotation <- as.matrix(column_annotation)
+colnames(column_annotation) <- c("subclass")
+
+pdf("EMT_pathway_log_FC_whole2.pdf")
+heatmap.3(data_matrix, ColSideColors=column_annotation)
+dev.off()
+
