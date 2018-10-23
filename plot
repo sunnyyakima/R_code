@@ -55,3 +55,15 @@ pdf("EMT_pathway_log_FC_whole2.pdf")
 heatmap.3(data_matrix, ColSideColors=column_annotation)
 dev.off()
 
+# heatmap.2
+setwd("/Users/yuliu/Bladder/publicData_GSE87304/Sinai_subtype/neuronal_heatmap")
+ mydata <- read.csv("neuronal_topgenes.csv", header=T, row.names=1)
+library(gplots)
+library(RColorBrewer)
+data_matrix <- data.matrix(mydata)
+x <- scale(t(as.matrix(data_matrix)))
+x <- t(x)
+heatmap.2(x, scale = "none", trace = "none", col = rev(colorRampPalette(brewer.pal(10, "RdBu"))(256)), distfun = function(x) as.dist(1-cor(t(x))), hclustfun = function(x) hclust(x, method="ave"), margins=c(4,7), Colv=FALSE)
+heatmap.2(x, scale = "none", trace = "none", col = rev(colorRampPalette(brewer.pal(10, "RdBu"))(256)), distfun = function(x) as.dist(1-cor(t(x))), hclustfun = function(x) hclust(x, method="ave"), margins=c(4,7), Colv=TRUE)
+pdf("neuronal_top_genes.pdf")
+
