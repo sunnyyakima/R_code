@@ -64,6 +64,8 @@ data_matrix <- data.matrix(mydata)
 x <- scale(t(as.matrix(data_matrix)))
 x <- t(x)
 heatmap.2(x, scale = "none", trace = "none", col = rev(colorRampPalette(brewer.pal(10, "RdBu"))(256)), distfun = function(x) as.dist(1-cor(t(x))), hclustfun = function(x) hclust(x, method="ave"), margins=c(4,7), Colv=FALSE)
-heatmap.2(x, scale = "none", trace = "none", col = rev(colorRampPalette(brewer.pal(10, "RdBu"))(256)), distfun = function(x) as.dist(1-cor(t(x))), hclustfun = function(x) hclust(x, method="ave"), margins=c(4,7), Colv=TRUE)
-pdf("neuronal_top_genes.pdf")
+
+# ordered gene list
+h <- heatmap.2(x, scale = "none", trace = "none", col = rev(colorRampPalette(brewer.pal(10, "RdBu"))(256)), distfun = function(x) as.dist(1-cor(t(x))), hclustfun = function(x) hclust(x, method="ave"), margins=c(4,7), Colv=TRUE)
+rownames(x)[h$rowInd]
 
