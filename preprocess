@@ -25,6 +25,10 @@ library("illuminaHumanv4.db")
 data <- read.csv("quantile_norm2.csv", header=T, row.names=1)
 symbols <- mapIds(illuminaHumanv4.db, rownames(data), "SYMBOL","PROBEID")
 write.csv(as.data.frame(symbols), file="geneSymbolMap.csv")
+library("org.Hs.eg.db")
+a  <- read.csv("nodes_95.txt", header=F, row.names=1)
+symbols <- mapIds(org.Hs.eg.db,  rownames(a), "SYMBOL", 'ENTREZID')
+
 
 # select the probe with max expression as gene expression
 mydat <- read.table("quantile_norm3_gene_symbol2.csv", header = T, sep = ",")
