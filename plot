@@ -1,3 +1,8 @@
+# remove column from dataframe by column name
+
+subdf = subset(gse69795_log, select = -c(MDA_FFPE87) )
+
+
 # PCA plot
 library(ggfortify)
 mydata_df <- as.data.frame(mydata_log)
