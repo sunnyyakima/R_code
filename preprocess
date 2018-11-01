@@ -6,6 +6,9 @@ data_log <- log(data + 1, 2)
 boxplot(data_log)
 write.csv(data_log, file="log_transformed.csv")
 
+# remove column from dataframe by column name
+subdf = subset(gse69795_log, select = -c(MDA_FFPE87) )
+
 # normalization
 library(preprocessCore)
 setwd("/Users/yuliu/Bladder/publicData")
