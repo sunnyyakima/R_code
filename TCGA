@@ -1,0 +1,10 @@
+# get the matching ID between files and cases, patients
+
+library(TCGAbiolinks)
+
+query <- GDCquery(project = "TCGA-BLCA",
+                  data.category = "Transcriptome Profiling",
+                  data.type="Gene Expression Quantification",
+                  workflow.type = "HTSeq - FPKM")
+table <- getResults(query)
+
