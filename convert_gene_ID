@@ -1,0 +1,9 @@
+
+library(EnsDb.Hsapiens.v86)
+ensemblGenes <- c("ENSG00000108958", "ENSG00000123009", "ENSG00000124399")
+select(EnsDb.Hsapiens.v86, key=ensemblGenes, columns=c("ENTREZID", "SYMBOL"), keytype="GENEID")
+
+tcga <- read.csv("/Users/yuliu/Bladder_response/TCGA/exprM2/TCGA_exprM_ensg.csv", header=T, row.names=1)
+tmp=gsub("\\..*","",row.names(tcga))
+map_ENSQ_Gene <- select(EnsDb.Hsapiens.v86, key=tmp, columns=c("ENTREZID", "SYMBOL"), keytype="GENEID")
+
