@@ -7,3 +7,6 @@ tcga <- read.csv("/Users/yuliu/Bladder_response/TCGA/exprM2/TCGA_exprM_ensg.csv"
 tmp=gsub("\\..*","",row.names(tcga))
 map_ENSQ_Gene <- select(EnsDb.Hsapiens.v86, key=tmp, columns=c("ENTREZID", "SYMBOL"), keytype="GENEID")
 
+
+library("illuminaHumanv4.db")
+data.frame(Gene=unlist(mget(x = c("ILMN_1660232", "ILMN_1763663"   ), envir = illuminaHumanv4SYMBOL)))
