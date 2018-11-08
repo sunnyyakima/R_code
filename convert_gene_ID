@@ -10,3 +10,5 @@ map_ENSQ_Gene <- select(EnsDb.Hsapiens.v86, key=tmp, columns=c("ENTREZID", "SYMB
 
 library("illuminaHumanv4.db")
 data.frame(Gene=unlist(mget(x = c("ILMN_1660232", "ILMN_1763663"   ), envir = illuminaHumanv4SYMBOL)))
+
+symbold <- mapIds(illuminaHumanv4.db, rownames(data), "SYMBOL","PROBEID", multiVals = "list")
