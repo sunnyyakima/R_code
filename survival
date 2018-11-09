@@ -1,0 +1,17 @@
+#
+Patient,status,month,grup
+GSM814348,no,9.17260274,low
+GSM814121,no,85.21643836,low
+GSM814139,no,50.59726027,ahigh
+GSM814248,no,41.0630137,ahigh
+GSM814052,no,110.3013699,agigh
+#
+x=read.csv(file="APOBEC3H.csv")
+library(survival)
+plot(survfit(Surv(x$month,as.numeric(x$status)-1)~x$grup),col=c(1,2),xlab=anova(coxph(Surv(x$month,as.numeric(x$status)-1)~x$grup),coxph(Surv(x$month,as.numeric(x$status)-1)~1))[2,4])
+
+# as.factor
+#levels: 1,     2
+         black, red
+         
+         
