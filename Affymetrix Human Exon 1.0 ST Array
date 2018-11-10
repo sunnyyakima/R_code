@@ -1,0 +1,7 @@
+
+library(oligo)
+celFiles <- list.celfiles("/Users/yuliu/Bladder_GSE87304_3", full.names=TRUE)
+rawData <- read.celfiles(celFiles)
+xl <- c(2, 4)
+yl <- c(-3, 2)
+MAplot(rawData[, 1:5], pairs=TRUE, ylim=yl, xlim=xl, plotFun=plot)
