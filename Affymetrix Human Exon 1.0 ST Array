@@ -5,3 +5,16 @@ rawData <- read.celfiles(celFiles)
 xl <- c(2, 4)
 yl <- c(-3, 2)
 MAplot(rawData[, 1:5], pairs=TRUE, ylim=yl, xlim=xl, plotFun=plot)
+
+fit1 <- fitProbeLevelModel(rawData)
+RLE(fit1)
+NUSE(fit1)
+image(fit1)
+
+backgroundCorrectionMethods()
+[1] "rma"  "mas"  "LESN"
+bgData <- backgroundCorrect(rawData)
+boxplot(bgData, target="core")
+boxplot(rawData, target="core")
+boxplot(bgData, target="full")
+
