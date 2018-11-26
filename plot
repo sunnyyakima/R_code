@@ -3,7 +3,13 @@
 library(ggfortify)
 mydata_df <- as.data.frame(mydata_log)
 autoplot(prcomp(t(mydata_df)))
+
+data <- read.csv("ExprM_w_clinical_t.csv", header=T, row.names=1, colClasses=c(rep("character",12), rep("numeric",33781)))
+expr <- data[,-(1:11)]
+expr <- as.data.frame(expr)
+autoplot(prcomp(expr))
  
+
 # scatter plot
 library(ggplot2)
 ggplot(bcl2l_df, aes(x=x, y=bcl2_score) ) + geom_point(size=2, shape=23)
