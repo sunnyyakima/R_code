@@ -8,7 +8,9 @@ data <- read.csv("ExprM_w_clinical_t.csv", header=T, row.names=1, colClasses=c(r
 expr <- data[,-(1:11)]
 expr <- as.data.frame(expr)
 autoplot(prcomp(expr))
- 
+df <- as.data.frame(data)
+autoplot(prcomp(expr), data = df, colour = 'site')
+
 
 # scatter plot
 library(ggplot2)
