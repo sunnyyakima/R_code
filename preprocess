@@ -36,7 +36,7 @@ symbols <- mapIds(org.Hs.eg.db,  rownames(a), "SYMBOL", 'ENTREZID')
 
 
 # select the probe with max expression as gene expression
-mydat <- read.table("quantile_norm3_gene_symbol2.csv", header = T, sep = ",")
+mydat <- read.table("quantile_norm3_gene_symbol2.csv", header = T, sep = ",", row.names = NULL)
 mydat.max <- aggregate(. ~ symbols, data = mydat, max)
 head(mydat.max)
 write.csv(mydat.max, file="quantile_norm3_gene_symbol3.csv", row.names=FALSE)
