@@ -1,0 +1,12 @@
+
+source("/Users/yuliu/lncRNA/BLCA_tcga_exprM/ActLncRNA/ActMiR.R")
+
+expr <- read.csv("mRNA_exprM.csv", header=T, row.names=1)
+lncRexpr <- read.csv("lncRNA_exprM.csv", header=T, row.names=1)
+list_input=read.csv("lncRNA_target.csv",header=F, sep="\t", stringsAsFactors=F)
+
+list_reference=split(list_input[[2]],list_input[[1]])
+list_result=lapply(1:length(list_reference), function(i)InfermiRactivity(names(list_reference)[i],lncRexpr, expr,list_reference[[i]],0.2))
+names(list_result)=names(list_reference) 
+
+write.csv(list_result, file="lncRNA_activity.csv")
