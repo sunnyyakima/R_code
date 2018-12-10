@@ -94,4 +94,10 @@ df <- as.data.frame(merged)
 library(ggplot2)
 qplot(IGHM, data=df, fill=HeavyChainClass, binwidth=0.2)
 
+igh_class$HeavyChainClass[igh_class$HeavyChainClass != "IgG"] = "nonIgG"
+merged <- merge(exprM, igh_class, by="MMRCid")
+df <- as.data.frame(merged)
+qplot(IGHG1, data=df, fill=HeavyChainClass, binwidth=0.2)
+
+
 
