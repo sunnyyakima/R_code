@@ -102,4 +102,22 @@ qplot(IGHG1, data=df, fill=HeavyChainClass, binwidth=0.2)
 # more histgram
 http://www.sthda.com/english/wiki/ggplot2-histogram-easy-histogram-graph-with-ggplot2-r-package
 
+> igh_class <- read.csv("GSE26863_IGH_class.csv", header=T)
+> 
+> igh_class$HeavyChainClass[igh_class$HeavyChainClass != "IgG"] = "nonIgG"
+Warning message:
+In `[<-.factor`(`*tmp*`, igh_class$HeavyChainClass != "IgG", value = c(NA,  :
+  invalid factor level, NA generated
+> 
+> head(igh_class)
+    MMRCid HeavyChainClass
+1 MMRC0001            <NA>
+2 MMRC0002             IgG
+3 MMRC0003             IgG
+4 MMRC0006            <NA>
+5 MMRC0009             IgG
+6 MMRC0010             IgG
+> 
+> ggplot2.histogram(data=df, xName='IGHG1', binwidth=0.2, groupName='HeavyChainClass', legendPosition="top",alpha=0.5, addDensity=TRUE)
+> 
 
