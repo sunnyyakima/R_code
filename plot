@@ -121,3 +121,13 @@ In `[<-.factor`(`*tmp*`, igh_class$HeavyChainClass != "IgG", value = c(NA,  :
 > ggplot2.histogram(data=df, xName='IGHG1', binwidth=0.2, groupName='HeavyChainClass', legendPosition="top",alpha=0.5, addDensity=TRUE)
 > 
 
+igh_class <- read.csv("GSE26863_IGH_class.csv", header=T)
+head(igh_class)
+sele = igh_class$HeavyChainClass != 'IgG'
+igh_class[sele,]
+sele [is.na(sele)] = F
+igh_class[sele,]
+tmp = c('isIgG', 'notIgG')[as.numeric(sele)+1]
+igh_class$groupIgG = tmp
+head(igh_class)
+
