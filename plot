@@ -1,3 +1,10 @@
+# scatter plot
+y <- read.csv("Y_genes3_t.csv", row.names=1)
+library(ggplot2)
+qplot(y$RPS4Y1,y$DDX3Y,col=y$X.gender.)
+y <- read.csv("IG_expr_probes2_t.csv", header=T, row.names=1)
+pairs(y) # pair-wise plot
+
 
 # PCA plot
 library(ggfortify)
