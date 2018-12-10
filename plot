@@ -99,5 +99,7 @@ merged <- merge(exprM, igh_class, by="MMRCid")
 df <- as.data.frame(merged)
 qplot(IGHG1, data=df, fill=HeavyChainClass, binwidth=0.2)
 
+# more histgram
+http://www.sthda.com/english/wiki/ggplot2-histogram-easy-histogram-graph-with-ggplot2-r-package
 
 
