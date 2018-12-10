@@ -85,3 +85,13 @@ heatmap.2(x, scale = "none", trace = "none", col = rev(colorRampPalette(brewer.p
 h <- heatmap.2(x, scale = "none", trace = "none", col = rev(colorRampPalette(brewer.pal(10, "RdBu"))(256)), distfun = function(x) as.dist(1-cor(t(x))), hclustfun = function(x) hclust(x, method="ave"), margins=c(4,7), Colv=TRUE)
 rownames(x)[h$rowInd]
 
+
+# stacked histogram
+exprM <- read.csv("IGH_genes2_t.csv", header=T)
+igh_class <- read.csv("GSE26863_IGH_class.csv", header=T)
+merged <- merge(exprM, igh_class, by="MMRCid")
+df <- as.data.frame(merged)
+library(ggplot2)
+qplot(IGHM, data=df, fill=HeavyChainClass, binwidth=0.2)
+
+
