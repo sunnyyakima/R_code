@@ -18,6 +18,8 @@ rownames(data) <- data[,1]
 data_mat <- data.matrix(data[,-1]) 
 head(data_mat)
 data_norm <- normalize.quantiles(data_mat, copy = TRUE)
+rownames(expr_norm) = rownames(expr_raw)
+colnames(expr_norm) = colnames(expr_raw)
 pdf("after_norm.pdf")
 boxplot(data_norm)
 dev.off()
