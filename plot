@@ -125,7 +125,7 @@ igh_class <- read.csv("GSE26863_IGH_class.csv", header=T)
 head(igh_class)
 sele = igh_class$HeavyChainClass != 'IgG'
 igh_class[sele,]
-sele [is.na(sele)] = F
+sele [is.na(sele)] = T
 igh_class[sele,]
 tmp = c('isIgG', 'notIgG')[as.numeric(sele)+1]
 igh_class$groupIgG = tmp
