@@ -35,3 +35,21 @@ should not be provided as an offset for downstream analysis packages. As of txim
 countsFromAbundance option "dtuScaledTPM". This scaling option is designed for use with txOut=TRUE for differential 
 transcript usage analyses.
 The "abundance" output is same regardless the option of "countsFromAbundance". The difference is "counts"
+
+
+exprM <- read.csv("counts_txi_from_salmon.csv", header=T, row.names=1)
+exprM_high <- exprM[apply(exprM[,-1],1,function(X) length(X[X>=5])>0 ),]
+dim(exprM)
+[1] 57964    60
+dim(exprM_high)
+[1] 35003    60
+exprM_high_log <- log(exprM_high + 1, 2)
+boxplot(exprM_high_log)
+library(preprocessCore)
+exprM_mat <- as.matrix(exprM_high_log)
+exprM_norm <- normalize.quantiles(exprM_mat, copy = TRUE)
+rownames(exprM_norm) <- rownames(exprM_high)
+colnames(exprM_norm) <- colnames(exprM_high)
+head(exprM_norm)
+write.csv(exprM_norm, file="Lagana_data_after_norm.csv")
+
