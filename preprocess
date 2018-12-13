@@ -1,3 +1,8 @@
+
+# remove low expression transcript/probe
+exprMatrix[apply(exprMatrix[,-1],1,function(X) length(X[X>=5])>0 ),] # remove row without counts >= 5
+countTable <- countTable[rowSums(countTable) > 0, ].  # remove rowsum == 0
+
 # log transformation
 setwd("/Users/yuliu/Bladder/publicData")
 data <- read.csv("non_normalized_data.csv",header=T, row.names=1)
