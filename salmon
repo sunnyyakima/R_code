@@ -17,4 +17,7 @@ setwd('/Users/yuliu/MM/Lagana_data/RNAseq/salmon_quant')
 tmp = system('ls */*/quant.sf.gz', intern=T)
 files <- file.path("/Users/yuliu/MM/Lagana_data/RNAseq/salmon_quant", tmp)
 all(file.exists(files))
-txi <- tximport(files, type = "salmon", tx2gene = tx2gene)
+names(files) <- files
+
+txi <- tximport(files, type = "salmon", tx2gene = tx2gene, ignoreAfterBar = TRUE, countsFromAbundance = "scaledTPM")
+write.csv(txi$counts, file="counts_txi_scaledTPM.csv")
