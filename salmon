@@ -12,7 +12,6 @@ head(tx2gene)
 5 ENST00000607096.1 ENSG00000284332.1
 6 ENST00000606857.1 ENSG00000268020.3
 
-
 setwd('/Users/yuliu/MM/Lagana_data/RNAseq/salmon_quant')
 tmp = system('ls */*/quant.sf.gz', intern=T)
 files <- file.path("/Users/yuliu/MM/Lagana_data/RNAseq/salmon_quant", tmp)
@@ -21,3 +20,18 @@ names(files) <- files
 
 txi <- tximport(files, type = "salmon", tx2gene = tx2gene, ignoreAfterBar = TRUE, countsFromAbundance = "scaledTPM")
 write.csv(txi$counts, file="counts_txi_scaledTPM.csv")
+
+library(tximport)
+txi <- tximport(files, type = "salmon", tx2gene = tx2gene)
+names(txi)
+
+## [1] "abundance"           "counts"              "length"
+## [4] "countsFromAbundance"
+
+# We could alternatively generate counts from abundances, using the argument countsFromAbundance, scaled to library size,
+"scaledTPM", or additionally scaled using the average transcript length, averaged over samples and to library size, 
+"lengthScaledTPM". Using either of these approaches, the counts are not correlated with length, and so the length matrix 
+should not be provided as an offset for downstream analysis packages. As of tximport version 1.10, we have added a new 
+countsFromAbundance option "dtuScaledTPM". This scaling option is designed for use with txOut=TRUE for differential 
+transcript usage analyses.
+The "abundance" output is same regardless the option of "countsFromAbundance". The difference is "counts"
