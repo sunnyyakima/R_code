@@ -1,3 +1,11 @@
+# boxplot with points
+data1 <- read.csv("corr_matrix_4K_afterfilter_t.txt", header=T, row.names=1)
+data2 <- read.csv("matched_index.csv", header=F, row.names=1) 
+pdf("age_boxplot_with_corr.pdf")
+boxplot(data1)
+points(1:ncol(data1),do.call(c,lapply(data2,function(x){c(data1[x[2],x[1]])})),col="red",pch=16)
+dev.off()
+
 # scatter plot
 y <- read.csv("Y_genes3_t.csv", row.names=1)
 library(ggplot2)
