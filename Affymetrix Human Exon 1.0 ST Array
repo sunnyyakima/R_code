@@ -1,5 +1,9 @@
 
 library(oligo)
+
+fls <- dir(pattern = "CEL")
+sapply(fls, oligo:::getCelChipType, useAffyio=T)   # list chip type
+
 celFiles <- list.celfiles("/Users/yuliu/Bladder_GSE87304_3", full.names=TRUE)
 rawData <- read.celfiles(celFiles)
 xl <- c(2, 4)
