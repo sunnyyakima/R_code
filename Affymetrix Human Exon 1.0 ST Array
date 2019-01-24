@@ -22,3 +22,34 @@ boxplot(bgData, target="core")
 boxplot(rawData, target="core")
 boxplot(bgData, target="full")
 
+
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("affycoretools", version = "3.8")
+
+library(oligo)
+library(affycoretools)
+
+setwd("/work/yu_liu/bladder/GSE87304")
+celFiles <- list.celfiles("/work/yu_liu/bladder/GSE87304", full.names=TRUE)
+rawData <- read.celfiles(celFiles)
+
+ppData <- rma(rawData,target="probeset")
+
+eset <- annotateEset(ppData, pd.huex.1.0.st.v2, type="probeset")
+save.image(file='GSE87304_oligo_rma.RData')
+
+head(eset)
+i <- is.na(fData(eset)$SYMBOL)
+eset2 <- eset[!i,]
+feset <- fData(eset2)
+teset <- exprs(eset2)
+cnames <- c( c("PROBEID","ID","SYMBOL"), colnames(teset)) 
+
+df_expr = data.frame(feset$PROBEID, feset$ID,  feset$SYMBOL, teset)
+df_max_expr <- aggregate(. ~ feset.SYMBOL, data = df_expr, max)
+
+write.table(data.frame(feset$PROBEID, feset$ID,  feset$SYMBOL, teset),file="expression2.txt",row.names=FALSE, col.names=cnames, sep="\t")
+write.table(df_max_expr, file="GSE87304_exprM.txt",row.names=FALSE, col.names=cnames, sep="\t")
+
