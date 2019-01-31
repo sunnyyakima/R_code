@@ -23,6 +23,6 @@ library(tximport)
 tx2gene <- read.csv("/scratch/yu_liu/resource/genecode_v28/tx2gene.gencode.v28.csv")
 txi <- tximport(files, type = "salmon", tx2gene = tx2gene, ignoreAfterBar=T)
 txi <- tximport(files, type = "salmon", tx2gene = tx2gene, ignoreAfterBar=T, countsFromAbundance = "scaledTPM")
-colnames(txi$counts) = files
+colnames(txi$counts) = samples$SRRid
 write.csv(txi$counts, file="GSE116324_txi_scaledTPM.csv")
 
