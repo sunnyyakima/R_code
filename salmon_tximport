@@ -1,0 +1,22 @@
+
+
+# make DB
+library(tximportData)
+library(GenomicFeatures)
+txdb <- makeTxDbFromGFF(file="/scratch/yu_liu/resource/genecode_v28/gencode.v28.annotation.gff3.gz")
+txdb
+saveDb(x=txdb, file = "/scratch/yu_liu/resource/genecode_v28/gencode.v28.annotation.TxDb")
+k <- keys(txdb, keytype = "TXNAME")
+tx2gene <- select(txdb, k, "GENEID", "TXNAME")
+head(tx2gene)
+dim(tx2gene)
+length(k)
+write.csv(tx2gene, file="/scratch/yu_liu/resource/genecode_v28/tx2gene.gencode.v28.csv", row.names = FALSE)
+
+
+#library(readr)  ????
+samples <- read.table("SRR_Acc_List.txt", header = TRUE)
+files <- file.path(samples$SRRid, paste0(samples$SRRid, "_quant"), "quant.sf")
+tx2gene <- read.csv("/scratch/yu_liu/resource/genecode_v28/tx2gene.gencode.v28.csv")
+txi <- tximport(files, type = "salmon", tx2gene = tx2gene, ignoreAfterBar=T)
+txi <- tximport(files, type = "salmon", tx2gene = tx2gene, ignoreAfterBar=T, countsFromAbundance = "scaledTPM")
