@@ -17,6 +17,9 @@ write.csv(tx2gene, file="/scratch/yu_liu/resource/genecode_v28/tx2gene.gencode.v
 #library(readr)  ????
 samples <- read.table("SRR_Acc_List.txt", header = TRUE)
 files <- file.path(samples$SRRid, paste0(samples$SRRid, "_quant"), "quant.sf")
+all(file.exists(files))
+
+library(tximport)
 tx2gene <- read.csv("/scratch/yu_liu/resource/genecode_v28/tx2gene.gencode.v28.csv")
 txi <- tximport(files, type = "salmon", tx2gene = tx2gene, ignoreAfterBar=T)
 txi <- tximport(files, type = "salmon", tx2gene = tx2gene, ignoreAfterBar=T, countsFromAbundance = "scaledTPM")
