@@ -1,0 +1,12 @@
+
+countData <- read.csv("GSE116324_padimacRnaSeq2.csv", header=T, row.names=1)
+colData <- read.csv("GSE116324_clinical_info2_t.txt", header=T, row.names=1, sep="\t")
+head(countData)
+head(colData)
+
+dds <- DESeqDataSetFromMatrix(countData = countData, colData = colData, design = ~ response)
+dds <- DESeqDataSetFromMatrix(countData = countData, colData = colData, design = ~ response + subtype)
+dds <- DESeq(dds)
+res <- results(dds)
+resOrdered <- res[order(res$padj),]
+
