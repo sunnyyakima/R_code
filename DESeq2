@@ -1,6 +1,6 @@
 https://bioconductor.org/packages/release/bioc/vignettes/tximport/inst/doc/tximport.html#deseq2
 
-
+library(DESeq2)
 countData <- read.csv("GSE116324_padimacRnaSeq2.csv", header=T, row.names=1)
 colData <- read.csv("GSE116324_clinical_info2_t.txt", header=T, row.names=1, sep="\t")
 head(countData)
