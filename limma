@@ -1,0 +1,13 @@
+
+library(limma)
+
+countData <- read.csv("GSE39754_exprM_filter.txt", header=T, row.names=1, sep="\t")
+targets <- readTargets("GSE39754_response_coded.txt", sep="\t")
+design <- model.matrix(~response)
+
+fit <- lmFit(countData, design)
+fit <- eBayes(fit)
+options(digits=3)
+writefile = topTable(fit,n=Inf,sort="none", p.value=1)
+write.csv(writefile, file="file.csv")
+
