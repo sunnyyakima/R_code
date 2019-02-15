@@ -53,3 +53,19 @@ df_max_expr <- aggregate(. ~ feset.SYMBOL, data = df_expr, max)
 write.table(data.frame(feset$PROBEID, feset$ID,  feset$SYMBOL, teset),file="expression2.txt",row.names=FALSE, col.names=cnames, sep="\t")
 write.table(df_max_expr, file="GSE87304_exprM.txt",row.names=FALSE, col.names=cnames, sep="\t")
 
+
+library(hgu133plus2.db)
+eset<- annotateEset(eset,hgu133plus2.db)
+x <- hgu133plus2SYMBOL
+
+mapped_probes <- mappedkeys(x)
+# Convert to a list
+xx <- as.list(x[mapped_probes])
+if(length(xx) > 0) {
+# Get the SYMBOL for the first five probes
+  xx[1:5]
+  # Get the first one
+  xx[[1]]
+}
+  
+  
