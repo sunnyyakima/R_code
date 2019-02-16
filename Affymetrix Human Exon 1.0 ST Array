@@ -69,3 +69,24 @@ if(length(xx) > 0) {
 }
   
   
+  
+  library(oligo)
+library(affycoretools)
+library(hgu133plus2.db)
+celFiles <- list.celfiles("./", full.names=TRUE)
+rawData <- read.celfiles(celFiles)
+ppData <- rma(rawData)
+eset <- annotateEset(ppData, hgu133plus2.db)
+head(eset)
+i <- is.na(fData(eset)$SYMBOL)
+eset2 <- eset[!i,]
+feset <- fData(eset2)
+teset <- exprs(eset2)
+df_expr = data.frame(feset$PROBEID, feset$SYMBOL, teset)
+df_max_expr <- aggregate(. ~ feset.SYMBOL, data = df_expr, max)
+cnames <- c("SYMBOL", colnames(teset))
+cnames <- c( c("SYMBOL","PROBEID"), colnames(teset)) 
+write.table(df_max_expr, file="E-TABM-1138_exprM.csv",row.names=FALSE, col.names=cnames, sep=",")
+
+
+
