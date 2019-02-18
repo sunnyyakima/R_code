@@ -1,5 +1,6 @@
 # remove certain column
 exprM2 <- exprM[,-(1:2)]
+rownames(exprM2) = exprM[,1]
 
 # remove low expression transcript/probe
 exprMatrix[apply(exprMatrix[,-1],1,function(X) length(X[X>=5])>0 ),] # remove row without counts >= 5
