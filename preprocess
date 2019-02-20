@@ -69,4 +69,14 @@ boxplot(gse48276_norm)
 row.names(gse48276_norm) <- row.names(gse48276)
 colnames(gse48276_norm) <- colnames(gse48276)
 write.csv(gse48276_norm, file="GSE48276_norm.csv", row.names=T)
+
+
+library('biomaRt')
+mart = useDataset("hsapiens_gene_ensembl", useEnsembl(biomart="ensembl"))
+mart = useDataset("hsapiens_gene_ensembl", useEnsembl(biomart="ensembl", version=75))
+G <- read.csv("MMRF_CoMMpass_IA13a_E74GTF_Salmon_V7.2_Filtered_Gene_TPM.txt", header=T, row.names=1,check.names=F, sep="\t")
+genes <- rownames(G)
+G_list <- getBM(filters= "ensembl_gene_id", attributes= c("ensembl_gene_id","hgnc_symbol"),values=genes,mart= mart)
+head(G_list)                                                        
+write.csv(G_list, file="mapping_ensg_symb.csv", row.names=F)
  
