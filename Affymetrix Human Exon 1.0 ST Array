@@ -90,3 +90,5 @@ write.table(df_max_expr, file="E-TABM-1138_exprM.csv",row.names=FALSE, col.names
 
 
 
+library(Biobase)
+eset <- new("ExpressionSet", exprs=as.matrix(exprM_norm))
