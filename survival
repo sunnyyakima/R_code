@@ -15,3 +15,14 @@ plot(survfit(Surv(x$month,as.numeric(x$status)-1)~x$grup),col=c(1,2),xlab=anova(
          black, red
          
          
+# data format: 
+# column "event": numeric 1 (which indicates death/uncensored/event) or 0 (which indicates alive/censored/no event)
+# column "time": numeric >0
+# column "group": factor
+
+library("survival")
+library("ggplot2")
+library("ggfortify")
+
+autoplot(survfit(Surv(data$time,data$event)~data$group))+ggtitle(paste0("p.value=",formatC(summary(coxph(Surv(data$time,data$event)~data$group))[["logtest"]]["pvalue"],format="e")))
+
