@@ -27,3 +27,4 @@ library("ggfortify")
 data <- read.csv("MMRF_plot2b.csv")
 autoplot(survfit(Surv(data$time,data$event)~data$group))+ggtitle(paste0("p.value=",formatC(summary(coxph(Surv(data$time,data$event)~data$group))[["logtest"]]["pvalue"],format="e")))
 
+
