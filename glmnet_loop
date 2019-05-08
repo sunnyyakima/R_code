@@ -1,0 +1,65 @@
+
+library(glmnet)
+library("survival")
+library("ggplot2")
+library("ggfortify")
+
+x <- read.csv("glmnet_exprM_1_2groups.csv", header=T, row.names=1, check.names=F)
+y <- c(rep("short",147), rep("long",147))
+y <- as.factor(y)
+x_t <- t(x)
+x_m = as.matrix(x_t)
+y_m <- as.matrix(y)
+
+cvfit = cv.glmnet(x_m, y_m, family = "binomial", type.measure = "class")
+
+coef_1 <- coef(cvfit, s = "lambda.min")
+mmrf <- read.csv("MMRF_adjusted_glmnet2.csv", header=T, row.names=1, check.names=F)
+mmrf_t <- t(mmrf)
+mmrf_m <- as.matrix(mmrf_t)
+mmrf_predict_1 <- predict(cvfit, newx = mmrf_m, s = "lambda.min", type = "class")
+colnames(mmrf_predict_1) = "group"
+
+survive <- read.csv("MMRF_CoMMpass_all_survive2.csv", header=T, row.names=1, check.names=F)
+
+survive2 <- survive[ order(row.names(survive)), ]
+mmrf_predict_2 <- mmrf_predict_1[order(row.names(mmrf_predict_1)), ]
+
+# data <- cbind( mmrf_predict_2, survive2)
+data <- cbind(survive2, mmrf_predict_2) 
+
+colnames(data) = c("event", "time", "Patient0", "group")
+
+autoplot(survfit(Surv(data$time,data$event)~data$group))+ggtitle(paste0("p.value=",formatC(summary(coxph(Su
+rv(data$time,data$event)~data$group))[["logtest"]]["pvalue"],format="e")))
+
+p1 <- summary(coxph(Surv(data$time,data$event)~data$group))[["logtest"]]["pvalue"]
+
+for (i in 1:99) {
+  cvfit = cv.glmnet(x_m, y_m, family = "binomial", type.measure = "class")
+  coef <- coef(cvfit, s = "lambda.min")
+  mmrf_predict <- predict(cvfit, newx = mmrf_m, s = "lambda.min", type = "class")
+  mmrf_predict_3 <- mmrf_predict[order(row.names(mmrf_predict)), ]
+  data <- cbind(survive2, mmrf_predict_3)
+  colnames(data) = c("event", "time", "Patient0", "group")
+  p <- summary(coxph(Surv(data$time,data$event)~data$group))[["logtest"]]["pvalue"]
+# p1 <- cbind(p1, p)
+  if (p1 > p ){
+    p1 <- p
+    coef_1 <- coef
+    mmrf_predict_2 <- mmrf_predict_3 
+    
+  }
+  print(p)
+}
+
+data <- cbind(survive2, mmrf_predict_2)
+colnames(data) = c("event", "time", "Patient0", "group")
+autoplot(survfit(Surv(data$time,data$event)~data$group))+ggtitle(paste0("p.value=",formatC(summary(coxph(Su
+rv(data$time,data$event)~data$group))[["logtest"]]["pvalue"],format="e")))
+
+# p1_t <- t(p1)
+# write.csv(p1_t, file="pvalue_100.csv", row.names=T)
+write.csv(as.matrix(coef_1), file="coef_1_w_best_pvalue.csv", row.names=T)
+write.csv(mmrf_predict_2, file="MMRF_prediction_w_best_pvalue.csv", row.names=T)
+
