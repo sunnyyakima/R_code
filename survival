@@ -28,3 +28,39 @@ data <- read.csv("MMRF_plot2b.csv")
 autoplot(survfit(Surv(data$time,data$event)~data$group))+ggtitle(paste0("p.value=",formatC(summary(coxph(Surv(data$time,data$event)~data$group))[["logtest"]]["pvalue"],format="e")))
 
 
+library("survival")
+exprM <- read.csv("GSE2658_exprM_topTF_targets.csv", header=T, row.names=1, check.names=F)
+surv0 <- read.csv("GSE2658_survive.csv", header=T, row.names=1, check.names=F)
+head(exprM)
+dim(exprM)
+dim(surv0)
+exprM_T <- t(exprM)
+dim(exprM_T)
+dim(surv0)
+data <- cbind(exprM_T, surv0)
+dim(data)
+head(data)
+data[[1]]
+
+pvalues = ""
+for ( i in 1:2375) {
+   pvalues[i]  <- summary(coxph(Surv(data$time,data$event)~data[[i]]))[["logtest"]]["pvalue"]
+  }
+ pvalues[2374]
+ pvalues[2376] = "sample"
+ pvalues[2377] = "event"
+ 
+ pvalues_df = t(as.data.frame(pvalues))
+ colnames(pvalues_df) = colnames(data)
+ write.csv(pvalues_df, file="GSE2658_top4_tf_target_pvalues.csv")
+ 
+ 
+ 
+ 
+   
+   
+   
+
+
+
+
