@@ -80,3 +80,16 @@ G_list <- getBM(filters= "ensembl_gene_id", attributes= c("ensembl_gene_id","hgn
 head(G_list)                                                        
 write.csv(G_list, file="mapping_ensg_symb.csv", row.names=F)
  
+
+
+library(preprocessCore)
+data <- read.csv("MMRF_coMMpass_Gene_counts_symbol.txt", sep="\t",  header=T, row.names=NULL, check.names=F)
+data.max <- aggregate(. ~ GENE_ID, data = data, max)
+rownames(data.max) <- data.max[,1]
+data_mat <- data.matrix(data.max[,-1])
+data_log <- log(data_mat + 1, 2)
+data_norm <- normalize.quantiles(data_log, copy = TRUE)
+rownames(data_norm) = rownames(data.max)
+colnames(data_norm) = colnames(data[,-1])
+write.csv(data_norm, file="MMRF_coMMpass_Gene_counts_symbol_log_norm.csv")
+
