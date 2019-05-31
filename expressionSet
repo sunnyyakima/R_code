@@ -1,1 +1,16 @@
 # generate expressionset from scrtatch
+
+library(Biobase)
+library(oligo)
+library(affycoretools)
+library(hgu133plus2.db)
+eset <- new("ExpressionSet", exprs=as.matrix(exprM_norm))
+eset<- annotateEset(eset,hgu133plus2.db)
+i <- is.na(fData(eset)$SYMBOL)
+eset2 <- eset[!i,]
+feset <- fData(eset2)
+teset <- exprs(eset2)
+df_expr = data.frame(feset$SYMBOL, teset)
+df_max_expr <- aggregate(. ~ feset.SYMBOL, data = df_expr, max)
+cnames <- c("SYMBOL", colnames(teset))
+write.table(df_max_expr, file="GSE2658_exprM_norm_symbol.csv", row.names=FALSE, col.names=cnames, sep=",")
