@@ -1,0 +1,39 @@
+
+library(Biobase)
+library(oligo)
+library(affycoretools)
+library(hgu133plus2.db)
+library(sva)
+
+GSE9782 <- read.csv("GSE9782_combat1.csv", header=T, row.names=1, check.names=F) 
+eset_9782 <- new("ExpressionSet", exprs=as.matrix(GSE9782))
+eset_9782@phenoData$batch = "GSE9782"
+
+GSE116324 <- read.csv("GSE116324_combat1.csv",  row.names=1, check.names=F)
+eset_116324 <- new("ExpressionSet", exprs=as.matrix(GSE116324))
+eset_116324@phenoData$batch = "GSE116324"
+
+GSE2658 <- read.csv("GSE2658_combat1.csv", header=T, row.names=1, check.names=F)
+eset_2658 <- new("ExpressionSet", exprs=as.matrix(GSE2658))
+eset_2658@phenoData$batch = "GSE2658"
+
+GSE19784_0 <- read.csv("GSE19784_combat1.csv", header=T, row.names=1, check.names=F)
+GSE19784 <- GSE19784_0[, -1]
+eset_19784 <- new("ExpressionSet", exprs=as.matrix(GSE19784))
+eset_19784@phenoData$batch = "GSE19784"
+ 
+ETABM_1138_0 <- read.csv("ETABM_1138_combat1.csv", header=T, row.names=1, check.names=F)
+ETABM_1138 <- ETABM_1138_0[, -1] 
+eset_1138 <- new("ExpressionSet", exprs=as.matrix(ETABM_1138))
+eset_1138@phenoData$batch = "ETABM1138"
+
+combined_expr <- combine(eset_9782, eset_116324, eset_2658, eset_19784, eset_1138)
+
+pheno = pData(combined_expr)
+batch = pheno$batch
+modcombat = model.matrix(~1, data=pheno)
+edata = exprs(combined_expr) 
+combat_edata = ComBat(dat=edata, batch=batch, mod=modcombat, par.prior=TRUE, prior.plots=FALSE)
+
+write.csv(combat_edata, file="combined_after_combat.csv")
+
