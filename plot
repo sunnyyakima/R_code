@@ -25,30 +25,17 @@ expr <- as.data.frame(expr)
 autoplot(prcomp(expr))
 df <- as.data.frame(data)
 autoplot(prcomp(expr), data = df, colour = 'site')
-> data_prcomp=prcomp(t(data_df))
-> qplot(data_prcomp$x[,1],data_prcomp$x[,2],col=as.factor(header))
-> 
-> 
-> 
-> 
-> pdf("combat_post.pdf")
-> 
-> qplot(data_prcomp$x[,1],data_prcomp$x[,2],col=as.factor(header))
-> 
-> dev.off()
-quartz 
-     2 
-> 
-> 
-> data2 <- read.csv("combined_before_combat.csv", header=T, row.names=1, check.names=F)
-> 
-> 
-> data_prcomp2=prcomp(t(data2)) 
-> 
-> 
-> qplot(data_prcomp2$x[,1],data_prcomp2$x[,2],col=as.factor(header))
-> 
 
+header <- c(rep("GSE9782",264),rep("GSE116324",44), rep("GSE2658", 559), rep("GSE19784",328), rep("ETABM_1138", 142))
+data_df <- read.csv("combined_after_combat.csv", header=T, row.names=1, check.names=F)
+data_prcomp=prcomp(t(data_df))
+qplot(data_prcomp$x[,1],data_prcomp$x[,2],col=as.factor(header))
+pdf("combat_post.pdf")
+qplot(data_prcomp$x[,1],data_prcomp$x[,2],col=as.factor(header))
+dev.off()
+data2 <- read.csv("combined_before_combat.csv", header=T, row.names=1, check.names=F)
+data_prcomp2=prcomp(t(data2)) 
+qplot(data_prcomp2$x[,1],data_prcomp2$x[,2],col=as.factor(header))
 
 
 # scatter plot
