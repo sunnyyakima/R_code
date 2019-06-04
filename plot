@@ -25,6 +25,30 @@ expr <- as.data.frame(expr)
 autoplot(prcomp(expr))
 df <- as.data.frame(data)
 autoplot(prcomp(expr), data = df, colour = 'site')
+> data_prcomp=prcomp(t(data_df))
+> qplot(data_prcomp$x[,1],data_prcomp$x[,2],col=as.factor(header))
+> 
+> 
+> 
+> 
+> pdf("combat_post.pdf")
+> 
+> qplot(data_prcomp$x[,1],data_prcomp$x[,2],col=as.factor(header))
+> 
+> dev.off()
+quartz 
+     2 
+> 
+> 
+> data2 <- read.csv("combined_before_combat.csv", header=T, row.names=1, check.names=F)
+> 
+> 
+> data_prcomp2=prcomp(t(data2)) 
+> 
+> 
+> qplot(data_prcomp2$x[,1],data_prcomp2$x[,2],col=as.factor(header))
+> 
+
 
 
 # scatter plot
