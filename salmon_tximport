@@ -26,3 +26,12 @@ txi <- tximport(files, type = "salmon", tx2gene = tx2gene, ignoreAfterBar=T, cou
 colnames(txi$counts) = samples$SRRid
 write.csv(txi$counts, file="GSE116324_txi_scaledTPM.csv")
 
+library(org.Hs.eg.db)
+db <- org.Hs.eg.db
+columns(db)
+mapIds(db, keys="ENSG00000000003", column="SYMBOL", keytype="ENSEMBL")
+ENSG <- read.csv("ENSG_id2.txt", header=T)
+ensg <- as.vector(ENSG$ENSG)
+ENSG_name = mapIds(db, keys=ensg, column="SYMBOL", keytype="ENSEMBL")
+
+write.csv(ENSG_name, file="ENSG_name.csv")
