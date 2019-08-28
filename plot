@@ -37,6 +37,9 @@ data2 <- read.csv("combined_before_combat.csv", header=T, row.names=1, check.nam
 data_prcomp2=prcomp(t(data2)) 
 qplot(data_prcomp2$x[,1],data_prcomp2$x[,2],col=as.factor(header))
 
+# with label
+ggplot2::qplot(prcomp(t(mydata_df ))$x[,1],prcomp(t(mydata_df))$x[,2]) + ggrepel::geom_text_repel(ggplot2::aes(x=prcomp( t(mydata_df)  )$x[,1],y=prcomp( t(mydata_df)  )$x[,2],label=colnames(mydata_df )))
+
 
 # scatter plot
 library(ggplot2)
