@@ -55,12 +55,8 @@ for ( i in 1:2375) {
  write.csv(pvalues_df, file="GSE2658_top4_tf_target_pvalues.csv")
  
  
- 
- 
-   
-   
-   
-
-
-
+library(survival)
+x <- read.csv("MM_survival_OS.txt", sep="\t", header=T) 
+plot(survfit(Surv(x$time_os,x$event_os) ~x$group),col=c(1,2,3,4,5),xlab=anova(coxph(Surv(x$time_os,x$event_os )~x$group),coxph(Surv(x$time_os,x$event_os )~1))[2,4]) 
+legend("topright", legend=unique(x$group), col=1:5, horiz=FALSE, bty='n')
 
