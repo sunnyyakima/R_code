@@ -53,4 +53,12 @@ for ( i in 1:2375) {
  pvalues_df = t(as.data.frame(pvalues))
  colnames(pvalues_df) = colnames(data)
  write.csv(pvalues_df, file="GSE2658_top4_tf_target_pvalues.csv")
- 
+
+
+library("survival")
+library("ggplot2")
+library("ggfortify")
+
+data0 <- read.csv("MMRF_plot2b.csv")
+autoplot(survfit(Surv(data0$time,data0$event)~as.factor(data0$group)), conf.int=F )+ggtitle(paste0("p.value=",formatC(summary(coxph(Surv(data0$time,data0$event)~as.factor(data0$group)))[["logtest"]]["pvalue"],format="e")))+scale_color_manual(values=c("orange","red","green"))
+
