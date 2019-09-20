@@ -1,0 +1,9 @@
+library("GSVA")
+
+mmrc_exprm <- read.csv("MMRC/MMRC_expr.csv", header=T, check.names=F,row.names=1) 
+gene0 <- read.csv("/Users/yuliu/MM_post_Cancer_paper/prognosticNet_nodes_rm_0.txt",sep="\t", header=T, check.names = F) 
+geneset = gene0$gene
+
+a <- gsva(as.matrix(mmrc_exprm), list(as.character(geneset)), method="ssgsea")
+a2 <- t(a)
+write.csv(a2, file="ssGSEA.csv") 
