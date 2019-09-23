@@ -9,9 +9,7 @@ a2 <- t(a)
 write.csv(a2, file="ssGSEA.csv") 
 
 # sing sample input
-single_sample = gsva(as.matrix(mmrc_exprm[,2],drop=F), list(as.character(geneset)), method="ssgsea", ssgsea.norm=F)
-
-
+single_sample = gsva(as.matrix(mmrc_exprm[,2,drop=F]), list(as.character(geneset)), method="ssgsea", ssgsea.norm=F)
 
 
 ## ssGSEA2 from broad
