@@ -7,3 +7,20 @@ geneset = gene0$gene
 a <- gsva(as.matrix(mmrc_exprm), list(as.character(geneset)), method="ssgsea")
 a2 <- t(a)
 write.csv(a2, file="ssGSEA.csv") 
+
+# sing sample input
+single_sample = gsva(as.matrix(mmrc_exprm[,2],drop=F), list(as.character(geneset)), method="ssgsea", ssgsea.norm=F)
+
+
+
+
+## ssGSEA2 from broad
+source("/Users/yuliu/MM_post_Cancer_paper/GSVA_source/ssGSEA2.0/src/ssGSEA2.0.R")
+
+p_load(gtools)
+p_load(verification)
+p_load(doParallel)
+p_load(foreach)
+p_load(magrittr)
+
+ssGSEA2("/Users/yuliu/MM_post_Cancer_paper/MMRC/MMRC_MMRC0002.gct", "ssGSEA2_out", gene.set.databases="/Users/yuliu/MM_post_Cancer_paper/MMRC/prognostic_gmt.gmt", combine.mode="combine.off")
