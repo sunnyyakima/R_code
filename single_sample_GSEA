@@ -13,6 +13,8 @@ single_sample = gsva(as.matrix(mmrc_exprm[,2,drop=F]), list(as.character(geneset
 
 
 ## ssGSEA2 from broad
+# https://github.com/broadinstitute/ssGSEA2.0/blob/master/src/ssGSEA2.0.R
+
 source("/Users/yuliu/MM_post_Cancer_paper/GSVA_source/ssGSEA2.0/src/ssGSEA2.0.R")
 
 p_load(gtools)
