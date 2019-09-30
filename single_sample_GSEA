@@ -24,3 +24,21 @@ p_load(foreach)
 p_load(magrittr)
 
 ssGSEA2("/Users/yuliu/MM_post_Cancer_paper/MMRC/MMRC_MMRC0002.gct", "ssGSEA2_out", gene.set.databases="/Users/yuliu/MM_post_Cancer_paper/MMRC/prognostic_gmt.gmt", combine.mode="combine.off")
+
+
+# R script to do ssGSEA for files in a folder
+
+# https://github.com/broadinstitute/ssGSEA2.0/blob/master/src/ssGSEA2.0.R
+source("/Users/yuliu/MM_post_Cancer_paper/GSVA_source/ssGSEA2.0/src/ssGSEA2.0.R")
+p_load(gtools)
+p_load(verification)
+p_load(doParallel)
+p_load(foreach)
+p_load(magrittr)
+a=list()
+for (f in list.files("gct3/")) {
+   a[[f]] <- ssGSEA2(paste0("gct3/",f), "ssGSEA2_out", gene.set.databases="/Users/yuliu/MM_post_Cancer_paper/MMRC/prognostic_gmt.gmt", combine.mode="combine.off", weight=0, nperm=0, statistic="Kolmogorov-Smirnov")$prognostic_nodes[[1]]$ES
+}
+
+write.csv(unlist(a), file="MMRC_ssGSEA_score.csv")
+
