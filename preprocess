@@ -70,7 +70,6 @@ row.names(gse48276_norm) <- row.names(gse48276)
 colnames(gse48276_norm) <- colnames(gse48276)
 write.csv(gse48276_norm, file="GSE48276_norm.csv", row.names=T)
 
-
 library('biomaRt')
 mart = useDataset("hsapiens_gene_ensembl", useEnsembl(biomart="ensembl"))
 mart = useDataset("hsapiens_gene_ensembl", useEnsembl(biomart="ensembl", version=75))
@@ -92,4 +91,32 @@ data_norm <- normalize.quantiles(data_log, copy = TRUE)
 rownames(data_norm) = rownames(data.max)
 colnames(data_norm) = colnames(data[,-1])
 write.csv(data_norm, file="MMRF_coMMpass_Gene_counts_symbol_log_norm.csv")
+
+
+## using genes with max expresssion from ENSG
+## remove lowly expressed gene: half of sample == 0
+exprM <- read.csv("MMRF_CoMMpass_IA13a_E74GTF_Salmon_Gene_symbol_TPM.csv", header=T, check.names=F)
+exprM.max <- aggregate(. ~ Symbol, data = exprM, max)
+write.csv(exprM.max, file="MMRF_CoMMpass_IA13a_E74GTF_Salmon_unique_Gene_symbol_TPM.csv", row.names=FALSE)
+
+### https://www.biostars.org/p/377059/
+count <- read.csv("count.txt",sep = "\t",header = T,row.names=1)
+head(count)
+#Remove rows if count is < zero in 50% of sample
+rem <- function(x){
+  x <- as.matrix(x)
+  x <- t(apply(x,1,as.numeric))
+  r <- as.numeric(apply(x,1,function(i) sum(i == 0) ))
+  remove <- which(r > dim(x)[2]*0.5)
+  return(remove)
+}
+remove <- rem(count)
+countdata <- count[-remove,]
+###
+
+exprM2 <- read.csv("MMRF_CoMMpass_IA13a_E74GTF_Salmon_unique_Gene_symbol_TPM_.csv", header = T,row.names=1)
+remove <- rem(exprM2)
+length(remove)
+exprM3 <- exprM2[-remove,]
+write.csv(exprM3, file="MMRF_CoMMpass_IA13a_E74GTF_Salmon_unique_Gene_symbol_TPM_filter_low.csv", row.names=T)
 
