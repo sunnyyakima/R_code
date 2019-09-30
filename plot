@@ -147,3 +147,12 @@ tmp = c('isIgG', 'notIgG')[as.numeric(sele)+1]
 igh_class$groupIgG = tmp
 head(igh_class)
 
+# densityplot
+# infile:
+sample,ssGSEA_score,kmean_group
+MMRC0001,0.40046,group_3
+MMRC0002,0.35837,group_3
+data0 <- read.csv("MMRC_hist.csv", header=T)
+ggplot(data0) + geom_density(aes(x = ssGSEA_score, color = kmean_group))    ## . <<<<< . >>>>>
+
+ggplot2.histogram(data=data0, xName='ssGSEA_score', groupName='kmean_group', addDensityCurve=TRUE, densityFill='#FF6666') 
