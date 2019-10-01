@@ -156,6 +156,6 @@ library(devtools)
 library(easyGgplot2)
 
 data0 <- read.csv("MMRC_hist.csv", header=T)
-ggplot(data0) + geom_density(aes(x = ssGSEA_score, color = kmean_group))    ## . <<<<< . >>>>>
+ggplot(data0) + geom_density(aes(x = ssGSEA_score, color = kmean_group)) +  xlim(-0.1, 1.0)   ## . <<<<< . >>>>>
 
 ggplot2.histogram(data=data0, xName='ssGSEA_score', groupName='kmean_group', addDensityCurve=TRUE, densityFill='#FF6666') 
