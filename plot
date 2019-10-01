@@ -159,3 +159,16 @@ data0 <- read.csv("MMRC_hist.csv", header=T)
 ggplot(data0) + geom_density(aes(x = ssGSEA_score, color = kmean_group)) +  xlim(-0.1, 1.0)   ## . <<<<< . >>>>>
 
 ggplot2.histogram(data=data0, xName='ssGSEA_score', groupName='kmean_group', addDensityCurve=TRUE, densityFill='#FF6666') 
+
+
+# stacked histogram
+library(ggplot2) 
+cluster <- read.csv("GSE19784_3cluster_change_EMC.csv", header=T)
+ISS_stage <- read.csv("GSE19784_subgroup_ISS.txt", header=T, sep="\t")
+combined <- merge(cluster, ISS_stage, by="sample")
+tail(combined)
+ggplot() + geom_bar(data = combined, aes(x = factor(group),fill = factor(ISS_stage)), position = "fill")
+pdf("ISS_risk.pdf")
+ggplot() + geom_bar(data = combined, aes(x = factor(group),fill = factor(ISS_stage)), position = "fill")
+dev.off()
+
