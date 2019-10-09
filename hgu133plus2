@@ -11,3 +11,7 @@ combined = merge(data1, maps, by="PROBEID")
 
 data2 = combined[,-1]
 
+mydat.max <- aggregate(. ~ SYMBOL, data = data2, max)
+
+write.csv(mydat.max, file="GSE69029_exprM_Symbol.txt", row.names=F)
+
