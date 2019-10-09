@@ -1,0 +1,13 @@
+
+library("hgu133plus2.db") 
+
+keys <- keys(hgu133plus2.db)
+
+maps = select(hgu133plus2.db, keys=keys, columns = "SYMBOL") 
+
+data1 <- read.csv("GSE69029_exprM.txt", header=T, sep="\t")
+
+combined = merge(data1, maps, by="PROBEID")
+
+data2 = combined[,-1]
+
