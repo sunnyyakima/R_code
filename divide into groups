@@ -1,0 +1,5 @@
+
+combined$group=c("low_risk","high_risk")[1+as.numeric(combined$ssGSEA2_AUC2>0.22)]
+
+Three groups:
+combined$group =c(“low_risk” “medium_ris”, “high_risk”)[1+as.numeric(some_score>threshold1)+as.numeric(some_score>threshold2)]
