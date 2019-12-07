@@ -1,0 +1,8 @@
+
+newrownames <- rownames(ns)
+newrownames1 = sapply(strsplit(newrownames,"_"), '[', 1)
+
+newcolnames = colnames(data1) 
+newcolnames1 = sapply(strsplit(newcolnames,"_"), '[', 1)
+
+colnames(data1) = newcolnames
