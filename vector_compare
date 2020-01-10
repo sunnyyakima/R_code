@@ -1,0 +1,5 @@
+
+
+setdiff(vectorB$id, vectorA$id)
+
+intersect(vector1, vector2)
