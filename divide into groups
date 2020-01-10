@@ -5,3 +5,5 @@ Three groups:
 combined$group =c(“low_risk” “medium_ris”, “high_risk”)[1+as.numeric(some_score>threshold1)+as.numeric(some_score>threshold2)]
 
 
+index <- is.na(MMRF_1094$stopday )
+MMRF_1094$stopday[index] = 2500
