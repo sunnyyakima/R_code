@@ -1,8 +1,8 @@
 
 Sys.setenv("VROOM_CONNECTION_SIZE" = 262144 * 10)
 library(GEOquery)
-library("hgu219.db"). # database for new chip
-library(oligo)
+library("hgu219.db"). # ChipDb package for new chip
+#library(oligo)
 library(affycoretools)
 
 
@@ -11,8 +11,8 @@ gse <- getGEO(my_id,GSEMatrix=TRUE)
 gse <- gse[[1]]
 
 dim(exprs(gse))
-eset2 <- new('ExpressionSet', exprs=exprs(gse))
-eset3 <- annotateEset(eset2, hgu219.db)
+#eset2 <- new('ExpressionSet', exprs=exprs(gse))
+eset3 <- annotateEset(gse, hgu219.db)
 
 i <- is.na(fData(eset3)$SYMBOL)
 eset4 <- eset3[!i,]
