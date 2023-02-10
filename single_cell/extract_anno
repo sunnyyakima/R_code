@@ -1,0 +1,21 @@
+
+# example: python extract_cellanno.py h5ad_file
+#https://medium.com/@daimin0514/how-to-convert-singlecellexperiment-to-anndata-8ec678b3a99e
+import sys
+from pathlib import Path
+from scipy import io
+import scanpy as sc
+
+fn    = sys.argv[1]
+save_dir='.'
+adata = sc.read_h5ad(fn)
+### write counts matrix
+#io.mmwrite(save_dir + '/data_for_R/counts.mtx', adata.X)
+### write cell & gene files
+cell_meta=adata.obs.copy()
+cell_meta['Barcode'] = cell_meta.index
+gene_meta=adata.var.copy()
+gene_meta['GeneName']=gene_meta.index
+cell_meta.to_csv(save_dir+'/counts_cellMeta.csv',index=None)
+#gene_meta.to_csv(save_dir+'/counts_geneMeta.csv',index=None)
+
