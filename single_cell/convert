@@ -1,0 +1,44 @@
+# convert from h5ad(annaData) to Seurat object
+# https://medium.com/@daimin0514/how-to-convert-singlecellexperiment-to-anndata-8ec678b3a99e
+
+# python part
+from pathlib import Path
+from scipy import io
+import scanpy as sc
+
+fn    = "XXXX.h5ad"
+save_dir='.'
+adata = sc.read_h5ad(fn)
+### Set the directory for saving files
+Path(save_dir + "/data_for_R").mkdir(parents=True, exist_ok=True)
+print(save_dir+"/data_for_R")
+### write counts matrix
+io.mmwrite(save_dir + '/data_for_R/counts.mtx', adata.X)
+### write cell & gene files
+cell_meta=adata.obs.copy()
+cell_meta['Barcode'] = cell_meta.index
+gene_meta=adata.var.copy()
+gene_meta['GeneName']=gene_meta.index
+cell_meta.to_csv(save_dir+'/data_for_R/counts_cellMeta.csv',index=None)
+gene_meta.to_csv(save_dir+'/data_for_R/counts_geneMeta.csv',index=None)
+
+# R part
+library(Matrix)
+library(Seurat)
+
+save_dir<-'/Users/yu.liv/Resource/single_cell/fetal-immune/data_for_R'
+counts<-readMM(paste0(save_dir,'/counts.mtx'))
+dim(counts)
+cellMeta<-read.csv(paste0(save_dir,'/counts_cellMeta.csv'))
+head(cellMeta)
+geneMeta<-read.csv(paste0(save_dir,'/counts_geneMeta.csv'))
+dim(geneMeta)
+head(geneMeta)
+### Set the rownames and colnames
+rownames(counts)<-cellMeta$Barcode
+colnames(counts)<-geneMeta$GeneName
+
+seu_obj <- CreateSeuratObject(counts = t(counts), project = "Seurat_obj", min.cells = 3, min.features = 200)
+rownames(seu_obj@meta.data)<-colnames(seo)
+saveRDS(seu_obj, file="seu_obj.rds")
+
