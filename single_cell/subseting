@@ -1,0 +1,11 @@
+
+# divide based on age
+seu_obj@meta.data$agegrp1 <- c("pre_child","child","adolescence_adult")[1 + as.numeric(seu_obj@meta.data$numerical_age > 60/365 
+                             & seu_obj@meta.data$numerical_age >= 10  ) + as.numeric(seu_obj@meta.data$numerical_age > 60/365)]
+
+
+seu_obj2  <- subset(seu_obj, subset = CellName %in% rownames(anno))
+
+seu_obj <- subset(seu_obj, subset = nFeature_RNA > 300 & nFeature_RNA < 3000 & percent.mt < 5) 
+
+seu_obj = seu_obj[, seu_obj@meta.data[, "condition"] == "Singlet"]
