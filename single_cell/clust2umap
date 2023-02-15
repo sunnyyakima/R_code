@@ -1,0 +1,28 @@
+library(Seurat)
+seu_obj <- readRDS("GSE168408_seu_obj.rds")
+anno    <- read.csv("GSE168408_anno.csv", header=T, row.names=1) 
+anno1   <- anno[,c("age","numerical_age","cell_type","major_clust","sub_clust")]
+seu_obj <- AddMetaData(seu_obj, anno1) 
+
+all.genes <- rownames(seu_obj)
+# The [[ operator can add columns to object metadata. This is a great place to stash QC stats
+seu_obj[["percent.mt"]] <- PercentageFeatureSet(seu_obj, pattern = "^MT-")
+seu_obj <- subset(seu_obj, subset = nFeature_RNA > 300 & nFeature_RNA < 3000 & percent.mt < 5) 
+
+seu_obj <- NormalizeData(seu_obj) 
+seu_obj <- FindVariableFeatures(seu_obj, selection.method = 'vst', nfeatures = 3000)
+hvg    <- VariableFeatures(seu_obj)
+var_regex = '^HLA-|^IG[HJKL]|^RNA|^MT|^RP' # remove HLA, immunoglobulin, RNA, MT, and RP genes based on HUGO gene names
+hvg    <- grep(var_regex, hvg, invert=T, value=T)
+
+seu_obj <- ScaleData(seu_obj, features = hvg)
+seu_obj <- RunPCA(seu_obj, features = hvg )
+seu_obj <- FindNeighbors(seu_obj, dims = 1:30)
+seu_obj <- FindClusters(seu_obj, resolution = 0.5)
+seu_obj <- RunUMAP(seu_obj, dims = 1:30)
+pdf("brain_umap_cluster.pdf")
+DimPlot(seu_obj, reduction = "umap")
+dev.off()
+pdf("brain_major_cluster.pdf")
+DimPlot(seu_obj, reduction = "umap", group.by="major_clust", label=FALSE).
+dev.off()
