@@ -1,0 +1,90 @@
+
+args <- commandArgs(TRUE)
+# cmd: Rscript scriptname  amygdala  Amygdala
+# args <- c("amygdala", "Amygdala")
+
+library("rtracklayer")
+library(edgeR)
+
+path_root     <- "/Users/yu.liv/Resource/GTEx/"
+gct_tissue    <- args[1]
+cov_tissue    <- args[2]
+
+filename1     <- paste0(path_root,"brain/gene_tpm_2017-06-05_v8_brain_", gct_tissue, ".gct")
+tpm           <- read.delim(filename1, skip=2, check.names=F, row.names=1)
+genesymbol    <- tpm[,1:2]
+rownames(tpm) <- tpm[,1]
+tpm           <- tpm[,-c(1,2)]
+ss            <- apply(tpm, 1, function(x) length(which(x>0.1))) 
+
+filename2     <- paste0(path_root,"brain/gene_reads_2017-06-05_v8_brain_", gct_tissue, ".gct")
+counts        <- read.delim(filename2, skip=2, check.names=F, row.names=1)
+rownames(counts) <- counts[,1]
+counts        <- counts[,-c(1,2)]
+ss2           <- apply(counts, 1, function(x) length(which(x>=6)))
+
+ii            <- intersect(names(which(ss>=(dim(tpm)[2]*0.2))), names(which(ss2>=(dim(counts)[2]*0.2))))
+counts        <- counts[ii,]
+genesymbol    <- genesymbol[match(ii, genesymbol[,1]),]
+dge           <- DGEList(counts=counts)
+dge           <- calcNormFactors(dge, method = "TMM")
+tmm           <- cpm(dge)
+boxplot(log(tmm[,1:50]+1,2), main="TMM normalization")
+tmm_int       <- t(apply(tmm, 1, function(x) qnorm((rank(x, na.last = "keep") - 0.5) / sum(!is.na(x)))))
+
+filename3 <- paste0(path_root,"covariates/GTEx_Analysis_v8_eQTL_covariates/Brain_", cov_tissue, ".v8.covariates.txt")
+cov       <- read.delim(filename3, check.names=F, row.names=1)
+filename4 <- paste0(path_root,"annotation/GTEx_Analysis_v8_Annotations_SubjectPhenotypesDS.txt")
+pheno     <- read.delim(filename4)
+filename5 <- paste0(path_root,"genotype/phg000830.v1.GTEx_WGS.genotype-calls-vcf_WholeGenomeSeq_635Ind_PASS_AB02_GQ20_HETX_MISS15_PLINKQC_chr22.txt") 
+geno      <- read.delim(filename5, check.names=F, row.names=1)
+
+
+id.exp    <- apply(as.matrix(colnames(tmm_int)), 1, function(x) paste(strsplit(x, split="-")[[1]][1:2], collapse="-"))
+ii        <- intersect(intersect(intersect(id.exp, pheno[,1]), colnames(cov)), colnames(geno))
+
+pheno     <- pheno[match(ii, pheno[,1]),]
+tmm_int   <- tmm_int[, match(ii, id.exp)]
+cov       <- cov[, ii]
+cov       <- cov[c(paste("PC", 1:5, sep=""), paste("InferredCov", 1:15, sep=""), "pcr", "platform","sex"),]
+
+#agegroups <- pheno[,3]
+#agegroups[which(pheno[,3]=="20-29"|pheno[,3]=="30-39"|pheno[,3]=="40-49")] <- 1
+#agegroups[which(pheno[,3]=="50-59")] <- 2
+#agegroups[which(pheno[,3]=="60-69"|pheno[,3]=="70-79")] <- 3
+#pheno     <- cbind(pheno, agegroups)
+# rownames(pheno) <- as.matrix(pheno)[,1]
+# pheno <- pheno[,c("SEX","DTHHRDY","agegroups")]
+
+filename6 <- paste0(path_root, "annotation/gencode.v26lift37.annotation.gtf") 
+gtf       <-  import(filename6) 
+gtf       <- as.data.frame(gtf)
+gtf       <- gtf[which(gtf[,"type"]=="gene"),]
+gtf       <- as.matrix(gtf)
+gtfid     <- apply(gtf,1, function(x) strsplit(x["gene_id"], split="_")[[1]][1])
+
+jj <- intersect(gtfid, rownames(tmm_int))
+tmm_int <- tmm_int[jj,]
+gtf <- gtf[match(jj, gtfid), ]
+geneloc <- cbind(jj, gtf[, "seqnames"], gtf[,"start"], gtf[,"end"])
+colnames(geneloc) <- c("geneid", "chr","left","right")
+filename7  <- paste0(path_root, "annotation/GeneExp_loc_", gct_tissue  ,".txt")
+write.table(geneloc, file=filename7, sep="\t", quote=F, row.names=F)
+
+idgroups <- pheno[,1]
+tmm_group <- tmm_int
+colnames(tmm_group) <- idgroups
+cov_group <- cov
+write.table(cov_group, file=paste0(path_root, "eQTL/", gct_tissue, "_covariate.txt"), sep="\t", quote=F)
+write.table(tmm_group, file=paste0(path_root, "eQTL/", gct_tissue, "_expr.txt"), sep="\t", quote=F)
+
+#for ( i in 1:3){
+#    idgroups <- pheno[which(pheno[,"agegroups"]==i),1]
+#    tmm_group <- tmm_int[, which(pheno[,"agegroups"]==i)]
+#    colnames(tmm_group) <- idgroups
+#    cov_group <- cov[, idgroups]
+#    write.table(cov_group, file=paste(path_root, "non_brain/Age", i, "_covariate.txt", sep=""), sep="\t", quote=F)
+#    write.table(tmm_group, file=paste(path_root, "non_brain/Age", i, "_expr.txt", sep=""), sep="\t", quote=F)
+#}
+
+
