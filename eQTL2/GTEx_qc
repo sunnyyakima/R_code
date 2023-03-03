@@ -1,0 +1,73 @@
+
+
+library(DESeq2)
+
+#regions <- c("amygdala","anterior_cingulate_cortex_ba24","caudate_basal_ganglia","cerebellar_hemisphere","cerebellum","cortex","frontal_cortex_ba9","hippocampus","hypothalamus","nucleus_accumbens_basal_ganglia","spinal_cord_cervical_c-1","substantia_nigra")
+
+regions <- c("putamen_basal_ganglia")
+
+for ( i in regions) {
+  filename <- paste0("gene_reads_2017-06-05_v8_brain_",i,".gct") 
+  gene <- read.delim(filename, skip=2, check.names=F, row.names=1)
+  genesymbol <- gene[,1:2]
+  counts <- gene[,-c(1,2)]
+  rownames(counts) <- gene[,1]
+  totalreads <- colSums(counts)
+## if totalreads > 10000000, exclude
+#hist(totalreads, xlim=c(10000000, max(totalreads)))
+#abline(v=10000000, col="red", lty=2)
+  print(length(which(totalreads<10000000)))
+# need to delete replicates; keep the replicate with the greatest number of reads
+  id <- apply(as.matrix(colnames(counts)), 1, function(x) paste(strsplit(x, split="-")[[1]][1:2], collapse="-"))
+  print(length(which(duplicated(id))))
+
+  pheno <- read.delim("GTEx_Analysis_v8_Annotations_SubjectPhenotypesDS.txt")
+  pheno <- pheno[match(id, pheno[,1]),]
+#agegroups <- pheno[,3]
+#agegroups[which(pheno[,3]=="20-29"|pheno[,3]=="30-39"|pheno[,3]=="40-49")] <- 1
+#agegroups[which(pheno[,3]=="50-59")] <- 2
+#agegroups[which(pheno[,3]=="60-69"|pheno[,3]=="70-79")] <- 3
+#  pheno <- cbind(pheno, agegroups)
+#  pheno <- pheno[,c("SEX","DTHHRDY","agegroups")]
+  pheno <- pheno[,c("SEX","DTHHRDY")]
+  coldata <- as.data.frame(pheno)
+#  coldata$agegroups <- factor(coldata$agegroups)
+  coldata$SEX <- factor(coldata$SEX)
+  coldata$DTHHRDY <- factor(coldata$DTHHRDY)
+
+
+  dds <- DESeqDataSetFromMatrix(countData=counts,colData=coldata,design= ~ SEX )
+  dds <- estimateSizeFactors(dds)
+#hist(sizeFactors(dds))
+  normalized_counts <- counts(dds, normalized=TRUE)
+  lognormalized_counts <- log(normalized_counts+1,2)
+
+  nn <- apply(lognormalized_counts, 1, function(x) length(which(x>1)))
+  lognormalized_counts_f <- lognormalized_counts[which(nn>(dim(lognormalized_counts)[2]*0.1)),]
+  lognormalized_counts_sc <- t(apply(lognormalized_counts_f, 1, function(x) (x-mean(x))/sd(x)))
+
+  Matrix <- as.matrix(t(lognormalized_counts_sc))
+  sim <- Matrix / sqrt(rowSums(Matrix * Matrix))
+  sim <- sim %*% t(sim)
+  D_sim <- as.dist(1 - sim)
+
+  hh <- hclust(D_sim, method="average")
+  clusters <- cutree(hh,k=10)
+
+  df <-t(lognormalized_counts_sc)
+  ds <- cov(df)
+  mahal <- mahalanobis(df, colMeans(df), ds, tol=1e-26)
+  pchimahal <- pchisq(mahal, df=dim(lognormalized_counts_sc)[1]-1, lower.tail=FALSE)
+  sigsamples <- names(which(pchimahal<(0.05/length(pchimahal))))
+  nsigcluster <- apply(as.matrix(1:10 ),1, function(x) length(intersect(sigsamples, names(which(clusters==x)))))
+#nsigcluster/table(clusters)
+  pdf(paste0("cluster_",i,".pdf"), height=5, width=8)
+  par(mfrow=c(1,2))
+  barplot(table(clusters), main= paste0(i, " num of samp"))
+  barplot(nsigcluster/table(clusters), main=paste0(i," % of sig samp"))
+  dev.off()
+
+}
+### for brain region only one samples (GTEX-QVJO) is excluded for region: putamen_basal_ganglia
+### because the total read is lower than 10M
+
