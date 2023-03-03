@@ -1,0 +1,46 @@
+
+args       <- commandArgs(TRUE)
+region     <- args[1]
+path_root  <- "/scratch/yu_liu/GTEx/brain/"
+gct_files  <- paste0(path_root, "gctfiles/gene_tpm_2017-06-05_v8_brain_", region, ".gct")
+tpm        <- read.delim(gct_files, skip=2, check.names=F, row.names=1)
+genesymbol <- tpm[,1:2]
+rownames(tpm) <- tpm[,1]
+tpm <- tpm[,-c(1,2)]
+id.exp <- apply(as.matrix(colnames(tpm)), 1, function(x) paste(strsplit(x, split="-")[[1]][1:2], collapse="-"))
+colnames(tpm) <- id.exp
+tpm <- log(tpm+1,2)
+
+r.squared.cis <- c()
+geno.cis <- c()
+for(chr in c(1:22, "X")) { 
+
+eQTLcis <- read.delim(paste(path_root,region,"/eQTL_MAF1_",region, "_chr", chr,"b", sep=""))
+geno <- read.delim(paste(path_root,region,"/",region,"_genotype.tmp_chr",chr,".txt", sep=""), check.names=F) 
+tpm <- as.matrix(tpm[, colnames(geno)])
+
+eQTLcis_f2<- eQTLcis[which(eQTLcis[,5]<10^-8),] 
+
+gg2 <-unique(eQTLcis_f2[,2])
+mincissnp_HQ  <- apply(as.matrix(gg2), 1, function(x) { tmp <- which(eQTLcis_f2[,2]==x)
+                    if(length(tmp)==1) { as.matrix(eQTLcis_f2)[tmp,1]} else { as.matrix(eQTLcis_f2)[tmp[which.min(eQTLcis_f2[tmp,5])],1]}})
+names(mincissnp_HQ) <- gg2
+
+### R2 
+geno <- as.matrix(geno)
+r.squared.HQ <- apply(as.matrix(seq(1, length(mincissnp_HQ))), 1, function(x) summary(lm(tpm[names(mincissnp_HQ)[x],]~geno[mincissnp_HQ[x],]))$r.squared)
+names(r.squared.HQ) <- paste(names(mincissnp_HQ), mincissnp_HQ, sep="-")
+r.squared.cis <- c(r.squared.cis, r.squared.HQ)
+geno.cis <- rbind(geno.cis, geno[mincissnp_HQ,])
+}
+save(r.squared.cis, geno.cis, file=paste(path_root,region, "/", region, "_ciseQTL_genotype.RData", sep=""))
+
+pdf(paste(path_root,region,"/r2plot_", region,".pdf", sep=""), height=5, width=8)
+par(mfrow=c(1,2))
+hist(r.squared.cis )
+gg <- apply(as.matrix(names(r.squared.cis)), 1, function(x) strsplit(x, split="-")[[1]][1])
+tpm.mean <- rowMeans(tpm)
+plot(r.squared.cis, tpm.mean[gg])
+dev.off()
+
+
