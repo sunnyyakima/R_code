@@ -1,0 +1,86 @@
+
+library(pheatmap)
+library(stringr)
+library("qusage")
+library("readxl")
+source("List2Matrix.r")
+
+path_root     <- "/Users/yu.liv/research_2023/rare_disease_network/"
+# based on gene
+path_msigdb   <- "/Users/yu.liv/Resource/MSigDB/"
+reactome      <- "c2.cp.reactome.v7.4.symbols.gmt"
+kegg          <- "c2.cp.kegg.v7.4.symbols.gmt"
+geneset_list1 <- read.gmt(paste0(path_msigdb, reactome))
+geneset_list2 <- read.gmt(paste0(path_msigdb, kegg))
+geneset_list  <- c(geneset_list1, geneset_list2) 
+
+coxpds_file   <- paste0(path_root, "gene_net/combined_oxphos_deficiency3.txt")
+coxpds_df     <- read.table(coxpds_file, sep="\t", header=T)
+coxpds_genes  <- coxpds_df$gene
+coxpds_omim   <- coxpds_df$omimID
+coxpds_omim   <- str_replace(coxpds_omim, ":", "_")
+coxpds_pathway<- list() 
+
+for (gene in coxpds_genes ) {
+  coxpds_pathway[[gene]] <- list( )
+  for (j in 1: length(geneset_list)) {
+    if (gene %in% geneset_list[[j]]) {
+       coxpds_pathway[[gene]] <- append(coxpds_pathway[[gene]], names(geneset_list[j]))
+    }
+  }
+} 
+
+
+names(coxpds_pathway) <- coxpds_omim
+pathways      <- unlist(coxpds_pathway)
+pathway_freq  <- as.data.frame(table(pathways)) 
+tail(pathway_freq[order(pathway_freq$Freq),],20) 
+write.csv(pathway_freq[order(pathway_freq$Freq),], file="pathway_freq.csv", row.names=F)
+
+pathways_list <- unique(na.omit(unlist(coxpds_pathway)))
+pathways_matr <- List2Matrix(coxpds_pathway, uniGene= pathways_list)
+pathways_matr <-  pathways_matr * 1
+m             <- as.matrix(pathways_matr)
+pathway_name <- rownames(m)
+names(pathway_name) <- paste0("pathway_",1:length(rownames(m)))
+write.csv(as.data.frame(pathway_name), file="pathway_name.csv")
+rownames(m)   <- names(pathway_name)
+pheatmap(m) 
+
+# based on HPO
+filenames <- list.files(paste0(path_root,"hpo_net"), pattern="*.xlsx", full.names=TRUE)
+
+get_map <- function(xlsx_file) {
+  my_data <- read_excel(xlsx_file)
+  hpo_descrip <- paste(my_data$HPO_TERM_ID,my_data$HPO_TERM_NAME,sep="\t")
+  return(hpo_descrip)
+}
+
+
+hpos_map <- lapply(filenames, get_map)
+map_list <- unique(na.omit(unlist(hpos_map)))
+map_df <- as.data.frame(map_list)
+map_df$hpo_id <- sapply(strsplit(map_df$map_list,"\t"), `[`, 1)
+map_df$hpo_term <- sapply(strsplit(map_df$map_list,"\t"), `[`, 2)
+map_df <- map_df[,c("hpo_id","hpo_term")] 
+
+get_hpo <- function(xlsx_file) {
+  my_data <- read_excel(xlsx_file)
+  return(my_data$HPO_TERM_ID)
+}
+
+coxpds_hpos  <- lapply(filenames, get_hpo)
+names(coxpds_hpos) <- substr(filenames, 68, 78)
+hpo_list     <- unique(na.omit(unlist(coxpds_hpos)))
+hpo_matr     <- List2Matrix(coxpds_hpos, uniGene= hpo_list)
+hpo_matr     <- hpo_matr * 1
+
+coxpds_hpos2 <- unlist(coxpds_hpos)
+hpo_freq     <- as.data.frame(table(coxpds_hpos2)) 
+colnames(hpo_freq) <- c("hpo_id","Freq")
+hpo_freq2 <- merge(hpo_freq, map_df, by="hpo_id")
+write.csv(hpo_freq2[order(hpo_freq2$Freq), ] , file="HPO_freq.csv", row.names=F)
+hpo_freq2 <- hpo_freq2[hpo_freq2$Freq > 1,]
+hpo_matr2 <- hpo_matr[rownames(hpo_matr) %in% hpo_freq2$hpo_id, ]
+m2 <- as.matrix(hpo_matr2)
+pheatmap(m2) 
