@@ -1,0 +1,7 @@
+
+import rtracklayer
+
+gtf <- import('celegans.gtf')
+gtf_df=as.data.frame(gtf)
+
+
