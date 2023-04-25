@@ -1,0 +1,12 @@
+
+library(rtracklayer)
+
+vst <- read.csv("GSE168408_mean_var.csv", header=T, row.names=1)
+variablegenes <- vst[vst$vst.variable == "TRUE",]
+
+gtf <- import("gencode.v43.long_noncoding_RNAs.gtf")
+gtf_df=as.data.frame(gtf) 
+lncRNA <- unique(gtf_df$gene_name)
+
+lncRNA_varibales <- intersect(rownames(variablegenes), lncRNA)
+
