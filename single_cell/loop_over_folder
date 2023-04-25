@@ -1,0 +1,30 @@
+
+library(tools)
+library(Seurat)
+
+#path_h5files <- "/Users/yu.liv/research_2023/brain_multiomics/GSE168408/my_own_cellranger_res"
+path_h5files <- "/scratch/yu_liu/GSE168408_h5"
+initial_h5   <- "SRR13873086_filtered_initial_feature_bc_matrix.h5"
+files_h5     <- list.files(path=path_h5files, pattern="*_filtered_feature_bc_matrix.h5", all.files=T, full.names=T)
+all(file.exists(files_h5))
+
+init_counts <- Read10X_h5(paste0(path_h5files,"/",initial_h5), use.names = TRUE, unique.features = TRUE)
+initial_sample <- gsub("_filtered_initial_feature_bc_matrix.h5", "", initial_h5)
+init_obj <- CreateSeuratObject(init_counts, project = initial_sample, assay = "RNA",min.cells = 0, min.features = 0, names.field = 1,names.d
+elim = "_", meta.data = NULL)
+
+for (filename in files_h5) {
+  sample1  <- gsub("_filtered_feature_bc_matrix.h5", "", filename)
+  sampleid <- gsub(paste0(path_h5files,"/"), "", sample1)
+  counts   <- Read10X_h5(filename, use.names = TRUE, unique.features = TRUE)
+  seu_obj  <- CreateSeuratObject(counts, project = sampleid, assay = "RNA",min.cells = 0, min.features = 0, names.field = 1,names.delim = "_
+", meta.data = NULL)
+  sobj <- merge(init_obj, y=seu_obj )
+  init_obj <- sobj
+}
+
+sobj <- init_obj
+sobj[["percent.mt"]] <- PercentageFeatureSet(sobj, pattern = "^MT-")
+#VlnPlot(sobj, features = c("nFeature_RNA","nCount_RNA","percent.mt"), pt.size = 0.1)
+sobj <- subset(sobj, subset = nFeature_RNA > 250 & nFeature_RNA < 2500 & percent.mt < 20)
+
